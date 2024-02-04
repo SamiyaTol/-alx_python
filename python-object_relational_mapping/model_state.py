@@ -1,28 +1,20 @@
 #!/usr/bin/python3
-# Salama-Jamal (7-model_state_fetch_all.py)
+# Salama-Jamal (model_state.py)
 """
-Reinstate all state items from database via python
+Explain class State
 """
 
-from sys import argv
-from model_state import Base, State
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 
-if __name__ == "__main__":
-
-    # make engine for database
-    user = argv[1]
-    passwd = argv[2]
-    db = argv[3]
-    engine = create_engine('mysql+mysqldb://{}:{}@localhost/{}'.
-                           format(user, passwd, db), pool_pre_ping=True)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
-    # query python instances in database
-    for instance in session.query(State).order_by(State.id):
-        print("{:d}: {:s}".format(instance.id, instance.name))
-
-    session.close()
+class State(Base):
+    """
+    Class State; exmple of Base
+    Join to MySQL table "states"
+    """
+    __tablename__ = "states"
+    id = Column(Integer, nullable=False, primary_key=True)
+    name = Column(String(128), nullable=False)
