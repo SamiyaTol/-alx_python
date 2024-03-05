@@ -1,20 +1,22 @@
+#!/usr/bin/python3
 import csv
-from task0 import get_employee_tasks
+import requests
+import sys
 
-def export_to_CSV(user_id):
-    tasks = get_employee_tasks(user_id)
-    file_name = f"{user_id}.csv"
-    
-    with open(file_name, 'w', newline='') as csvfile:
-        fieldnames = ["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        
-        writer.writeheader()
-        
-        for task in tasks:
-            writer.writerow({"USER_ID": user_id, "USERNAME": task["username"], "TASK_COMPLETED_STATUS": task["completed"], "TASK_TITLE": task["title"]})
+user_id = str(sys.argv[1])
 
-if __name__ == "__main__":
-    import sys
-    user_id = int(sys.argv[1])
-    export_to_CSV(user_id)
+request_user = "https://jsonplaceholder.typicode.com/users/{}".format(user_id)
+request_todos = "https://jsonplaceholder.typicode.com/users/{}/todos".format(user_id)
+
+data_user = requests.get(request_user).json()
+data_todos = requests.get(request_todos).json()
+
+filename = f"{user_id}.csv"
+
+with open(filename, "w", newline="") as file:
+    csvwriter = csv.writer(file, quoting=csv.QUOTE_ALL)
+    for task in data_todos:
+        csvwriter.writerow(
+            [user_id, str(data_user["username"]), task["completed"], task["title"]]
+        )
+        
